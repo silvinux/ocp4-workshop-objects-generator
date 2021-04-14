@@ -23,5 +23,27 @@ $ ansible-playbook apply.yml -i inventory/ -e target=bootstrap
 
 1. Once is finished, you should've deployed the objects you need.
 ```bash
+$ oc projects | grep workshop
+  * workshop-user1 - Workshops USER1
+    workshop-user2 - Workshops USER2
+    workshop-user3 - Workshops USER3
+    workshop-user4 - Workshops USER4
+    workshop-user5 - Workshops USER5
+    workshop-user6 - Workshops USER6
+    workshop-user7 - Workshops USER7
+Using project "workshop-user1" on server "https://api.docp4.lab.bcnconsulting.com:6443".
 
+$ oc get all
+NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/gogs                ClusterIP   172.255.20.179   <none>        3000/TCP   39m
+service/hostname-postgres   ClusterIP   172.255.237.60   <none>        5432/TCP   39m
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/pods-name-gogs   0/0     0            0           39m
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/pods-name-gogs-67dd4b956c   0         0         0       39m
+
+NAME                                  READY   AGE
+statefulset.apps/pods-name-postgres   0/0     39m
 ```

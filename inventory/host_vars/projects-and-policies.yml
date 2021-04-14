@@ -1,0 +1,88 @@
+---
+user1:
+  NAMESPACE: "workshop-user1"
+  NAMESPACE_DISPLAY_NAME: "Workshops USER1"
+  USER: "user1"
+user2:
+  NAMESPACE: "workshop-user2"
+  NAMESPACE_DISPLAY_NAME: "Workshops USER2"
+  USER: "user2"
+user3:
+  NAMESPACE: "workshop-user3"
+  NAMESPACE_DISPLAY_NAME: "Workshops USER3"
+  USER: "user3"
+user4:
+  NAMESPACE: "workshop-user4"
+  NAMESPACE_DISPLAY_NAME: "Workshops USER4"
+  USER: "user4"
+user5:
+  NAMESPACE: "workshop-user5"
+  NAMESPACE_DISPLAY_NAME: "Workshops USER5"
+  USER: "user5"
+user6:
+  NAMESPACE: "workshop-user6"
+  NAMESPACE_DISPLAY_NAME: "Workshops USER6"
+  USER: "user6"
+user7:
+  NAMESPACE: "workshop-user7"
+  NAMESPACE_DISPLAY_NAME: "Workshops USER7"
+  USER: "user7"
+
+ansible_connection: local
+openshift_cluster_content:
+- object: projectrequest
+  content:
+  - name: "user1"
+    template: "/root/disc_ocp4_install/ocp4-upi-baremetal-lab/ocp-workshop/templates/project-requests.yml"
+    action: create
+    params_from_vars: "{{ user1 }}"
+    tags:
+    - projects
+- object: projectrequest
+  content:
+  - name: "user2"
+    template: "/root/disc_ocp4_install/ocp4-upi-baremetal-lab/ocp-workshop/templates/project-requests.yml"
+    action: create
+    params_from_vars: "{{ user2 }}"
+    tags:
+    - projects
+- object: projectrequest
+  content:
+  - name: "user3"
+    template: "/root/disc_ocp4_install/ocp4-upi-baremetal-lab/ocp-workshop/templates/project-requests.yml"
+    action: create
+    params_from_vars: "{{ user3 }}"
+    tags:
+    - projects
+- object: projectrequest
+  content:
+  - name: "user4"
+    template: "/root/disc_ocp4_install/ocp4-upi-baremetal-lab/ocp-workshop/templates/project-requests.yml"
+    action: create
+    params_from_vars: "{{ user4 }}"
+    tags:
+    - projects
+- object: projectrequest
+  content:
+  - name: "user5"
+    template: "/root/disc_ocp4_install/ocp4-upi-baremetal-lab/ocp-workshop/templates/project-requests.yml"
+    action: create
+    params_from_vars: "{{ user5 }}"
+    tags:
+    - projects
+- object: projectrequest
+  content:
+  - name: "user6"
+    template: "/root/disc_ocp4_install/ocp4-upi-baremetal-lab/ocp-workshop/templates/project-requests.yml"
+    action: create
+    params_from_vars: "{{ user6 }}"
+    tags:
+    - projects
+- object: projectrequest
+  content:
+  - name: "user7"
+    template: "/root/disc_ocp4_install/ocp4-upi-baremetal-lab/ocp-workshop/templates/project-requests.yml"
+    action: create
+    params_from_vars: "{{ user7 }}"
+    tags:
+    - projects

@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gogs
+  name: pods-name-gogs
+  namespace: silviop-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gogs
+      deployment: gogs
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: gogs
+        deployment: gogs
+    spec:
+      serviceAccountName: sa-gogs
+      containers:
+      - image: $EXTERNAL_REGISTRY/wkulhanek/gogs
+        imagePullPolicy: IfNotPresent
+        name: gogs
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data
+          name: gogs-volume-1
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+#      volumes:
+#      - emptyDir: {}
+#        name: gogs-volume-2
+      volumes:
+      - name: gogs-volume-1
+        persistentVolumeClaim:
+          claimName: pvclaim-gogs
+#  volumeClaimTemplates:
+#  - metadata:
+#      name: gogs-volume-1
+#    spec:
+#      accessModes: [ "ReadWriteMany" ]
+#      storageClassName: 
+#      resources:
+#        requests:
+#          storage: 250Mi
+...

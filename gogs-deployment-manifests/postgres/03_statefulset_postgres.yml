@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pods-name-postgres
+  labels:
+    app: workshop-postgres
+spec:
+  selector:
+    matchLabels:
+      app: workshop-postgres
+  serviceName: postgres-headless
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: workshop-postgres
+    spec:
+      terminationGracePeriodSeconds: 30
+      serviceAccountName: sa-postgres
+      containers:
+      - name: contaner-postgres
+        image: $EXTERNAL_REGISTRY/rhel8/postgresql-10
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRESQL_USER
+          value: gogs
+        - name: POSTGRESQL_DATABASE
+          value: gogs
+        - name: POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: gogs-postgres-secret
+              key: gogs-postgres-password
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready -U gogs -d gogs -h 127.0.0.1 -p 5432
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready -U gogs -d gogs -h 127.0.0.1 -p 5432
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 6
+          failureThreshold: 1
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: pvclaim-postgres
+#  volumeClaimTemplates:
+#  - metadata:
+#      name: data
+#    spec:
+#      accessModes: [ "ReadWriteOnce" ]
+#      storageClassName: 
+#      resources:
+#        requests:
+#          storage: 250Mi
+...

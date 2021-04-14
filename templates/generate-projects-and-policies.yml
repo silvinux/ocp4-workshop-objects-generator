@@ -1,0 +1,20 @@
+---
+{% for ns in ns_lists %}
+{{ ns }}:
+  NAMESPACE: "{{ namespace_prefix }}-{{ ns }}"
+  NAMESPACE_DISPLAY_NAME: "{{ namespace_prefix | title}}s {{ ns |upper }}"
+  USER: "{{ ns }}"
+{% endfor %}
+
+ansible_connection: local
+openshift_cluster_content:
+{% for ns in ns_lists %}
+- object: projectrequest
+  content:
+  - name: "{{ ns }}"
+    template: "{{ playbook_dir }}/templates/project-requests.yml"
+    action: create
+    params_from_vars: {{ '"{{' }} {{ ns }} }}"
+    tags:
+    - projects
+{% endfor %}

@@ -1,0 +1,6 @@
+---
+- name: Deploy {{ target }} 
+  hosts: "{{ target }}"
+  tasks:
+    - include_role:
+        name: openshift-applier/roles/openshift-applier

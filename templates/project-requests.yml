@@ -1,0 +1,272 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  template: projectrequest-template
+message: |-
+  The following project/namespace has been created: ${NAMESPACE}
+metadata:
+  annotations:
+    description: |-
+      ProjectRequest Template
+  creationTimestamp: null
+  name: ${NAMESPACE}
+objects:
+- apiVersion: v1
+  kind: ProjectRequest
+  metadata:
+    name: ${NAMESPACE}
+  description: '${NAMESPACE_DESCRIPTION}'
+  displayName: '${NAMESPACE_DISPLAY_NAME}'
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: ${NAMESPACE}-compute-resources
+    namespace: ${NAMESPACE}
+  spec:
+    hard:
+      pods: "5"
+      requests.cpu: "1"
+      requests.memory: "1Gi"
+      limits.cpu: "1"
+      limits.memory: 1Gi
+- apiVersion: "v1"
+  kind: "LimitRange"
+  metadata:
+    name: "${NAMESPACE}-core-resource-limits" 
+    namespace: ${NAMESPACE}
+  spec:
+    limits:
+      - type: "Pod"
+        max:
+          cpu: "500m" 
+          memory: "512Mi" 
+        min:
+          cpu: "100m" 
+          memory: "3Mi" 
+      - type: "Container"
+        max:
+          cpu: "250m" 
+          memory: "512Mi" 
+        min:
+          cpu: "50m" 
+          memory: "2Mi" 
+        default:
+          cpu: "125m" 
+          memory: "100Mi" 
+        defaultRequest:
+          cpu: "100m" 
+          memory: "50Mi" 
+        maxLimitRequestRatio:
+          cpu: "2"
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: ${NAMESPACE}-storage-consumption
+    namespace: ${NAMESPACE}
+  spec:
+    hard:
+      persistentvolumeclaims: "6" 
+      requests.storage: "1Gi"
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: admin-${USER}
+    namespace: ${NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: admin
+  subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: ${USER}
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: sa-postgres
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: sa-gogs
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: hostname-postgres
+    labels:
+      app: workshop-postgres
+    namespace: ${NAMESPACE}
+  spec:
+    ports:
+    - port: 5432
+      protocol: TCP
+    selector:
+      app: workshop-postgres
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: gogs
+    labels:
+      app: workshop-gogs
+    namespace: ${NAMESPACE}
+  spec:
+    ports:
+    - name: 3000-tcp
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+    selector:
+      app: workshop-gogs
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: pods-name-postgres
+    labels:
+      app: workshop-postgres
+    namespace: ${NAMESPACE}
+  spec:
+    selector:
+      matchLabels:
+        app: workshop-postgres
+    serviceName: postgres-headless
+    replicas: 0
+    updateStrategy:
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: workshop-postgres
+      spec:
+        terminationGracePeriodSeconds: 30
+        serviceAccountName: sa-postgres
+        containers:
+        - name: contaner-postgres
+          image: $EXTERNAL_REGISTRY/rhel8/postgresql-10
+          ports:
+          - containerPort: 5432
+          env:
+          - name: POSTGRESQL_USER
+            value: gogs
+          - name: POSTGRESQL_DATABASE
+            value: gogs
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: gogs-postgres-secret
+                key: gogs-postgres-password
+          volumeMounts:
+          - name: postgres-data
+            mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready -U gogs -d gogs -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready -U gogs -d gogs -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 6
+            failureThreshold: 1
+        volumes:
+           - emptyDir: {}
+             name: postgres-data
+#        - name: postgres-data
+#          persistentVolumeClaim:
+#            claimName: pvclaim-postgres
+#    volumeClaimTemplates:
+#      - metadata:
+#          name: data
+#        spec:
+#          accessModes: [ "ReadWriteOnce" ]
+#          storageClassName:
+#          resources:
+#            requests:
+#              storage: 250Mi
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: pods-name-gogs
+    labels:
+      app: gogs
+    namespace: ${NAMESPACE}
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: gogs
+        deployment: gogs
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: gogs
+          deployment: gogs
+      spec:
+        serviceAccountName: sa-gogs
+        containers:
+        - image: $EXTERNAL_REGISTRY/wkulhanek/gogs
+          imagePullPolicy: IfNotPresent
+          name: gogs
+          ports:
+          - containerPort: 3000
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /data
+            name: gogs-volume-1
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: gogs-volume-1
+#        volumes:
+#        - name: gogs-volume-1
+#          persistentVolumeClaim:
+#            claimName: pvclaim-gogs
+#    volumeClaimTemplates:
+#    - metadata:
+#        name: gogs-volume-1
+#      spec:
+#        accessModes: [ "ReadWriteMany" ]
+#        storageClassName: 
+#        resources:
+#          requests:
+#            storage: 250Mi
+parameters:
+- description: Name
+  displayName: Name
+  name: NAMESPACE
+  required: true
+- description: DisplayName
+  displayName: DisplayName
+  name: NAMESPACE_DISPLAY_NAME
+  required: true
+- description: Description
+  displayName: Description
+  name: NAMESPACE_DESCRIPTION
+- description: UserName
+  displayName: UserName
+  name: USER

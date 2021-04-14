@@ -1,0 +1,21 @@
+---
+- name: Deploy {{ target }} 
+  hosts: localhost
+  #vars:
+  #  namespace_prefix: workshop
+  #  ns_lists:
+  #    - user1
+  #    - user2
+  #    - user3
+  #    - user4
+  #    - user5
+  #    - user6
+  #    - user7
+  tasks:
+    - name: Generate projects-and-policies.yml
+      template:
+        src: templates/generate-projects-and-policies.yml
+        dest: inventory/host_vars/projects-and-policies.yml
+        backup: yes
+      tags:
+        - create-template

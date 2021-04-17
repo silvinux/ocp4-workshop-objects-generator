@@ -1,0 +1,21 @@
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: workshop-gogs
+    env: workshop
+  name: gogs-route
+spec:
+  host: $APPSNAME$APPSSUBDOMAIN
+  port:
+    targetPort: http-port
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: gogs
+    weight: 100
+  wildcardPolicy: None
+...

@@ -22,7 +22,7 @@ spec:
       serviceAccountName: sa-postgres
       containers:
       - name: contaner-postgres
-        image: $EXTERNAL_REGISTRY/rhel8/postgresql-10
+        image: $EXTERNAL_REGISTRY/$POSTGRES_IMAGE
         ports:
         - containerPort: 5432
         env:
@@ -64,13 +64,13 @@ spec:
       - name: postgres-data
         persistentVolumeClaim:
           claimName: pvclaim-postgres
-#  volumeClaimTemplates:
-#  - metadata:
-#      name: data
-#    spec:
-#      accessModes: [ "ReadWriteOnce" ]
-#      storageClassName: 
-#      resources:
-#        requests:
-#          storage: 250Mi
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: $STORAGE_CLASS_NAME_POSTGRES
+      resources:
+        requests:
+          storage: 250Mi
 ...

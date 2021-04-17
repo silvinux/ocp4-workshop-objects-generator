@@ -8,7 +8,7 @@ metadata:
   #namespace: gogs-test
 spec:
   ports:
-  - name: 3000-tcp
+  - name: http-port
     port: 3000
     protocol: TCP
     targetPort: 3000

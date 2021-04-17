@@ -18,56 +18,56 @@ objects:
     name: ${NAMESPACE}
   description: '${NAMESPACE_DESCRIPTION}'
   displayName: '${NAMESPACE_DISPLAY_NAME}'
-- apiVersion: v1
-  kind: ResourceQuota
-  metadata:
-    name: ${NAMESPACE}-compute-resources
-    namespace: ${NAMESPACE}
-  spec:
-    hard:
-      pods: "5"
-      requests.cpu: "1"
-      requests.memory: "1Gi"
-      limits.cpu: "1"
-      limits.memory: 1Gi
-- apiVersion: "v1"
-  kind: "LimitRange"
-  metadata:
-    name: "${NAMESPACE}-core-resource-limits" 
-    namespace: ${NAMESPACE}
-  spec:
-    limits:
-      - type: "Pod"
-        max:
-          cpu: "500m" 
-          memory: "512Mi" 
-        min:
-          cpu: "100m" 
-          memory: "3Mi" 
-      - type: "Container"
-        max:
-          cpu: "250m" 
-          memory: "512Mi" 
-        min:
-          cpu: "50m" 
-          memory: "2Mi" 
-        default:
-          cpu: "125m" 
-          memory: "100Mi" 
-        defaultRequest:
-          cpu: "100m" 
-          memory: "50Mi" 
-        maxLimitRequestRatio:
-          cpu: "2"
-- apiVersion: v1
-  kind: ResourceQuota
-  metadata:
-    name: ${NAMESPACE}-storage-consumption
-    namespace: ${NAMESPACE}
-  spec:
-    hard:
-      persistentvolumeclaims: "6" 
-      requests.storage: "1Gi"
+#- apiVersion: v1
+#  kind: ResourceQuota
+#  metadata:
+#    name: ${NAMESPACE}-compute-resources
+#    namespace: ${NAMESPACE}
+#  spec:
+#    hard:
+#      pods: "5"
+#      requests.cpu: "1"
+#      requests.memory: "1Gi"
+#      limits.cpu: "1"
+#      limits.memory: 1Gi
+#- apiVersion: "v1"
+#  kind: "LimitRange"
+#  metadata:
+#    name: "${NAMESPACE}-core-resource-limits" 
+#    namespace: ${NAMESPACE}
+#  spec:
+#    limits:
+#      - type: "Pod"
+#        max:
+#          cpu: "500m" 
+#          memory: "512Mi" 
+#        min:
+#          cpu: "100m" 
+#          memory: "3Mi" 
+#      - type: "Container"
+#        max:
+#          cpu: "250m" 
+#          memory: "512Mi" 
+#        min:
+#          cpu: "50m" 
+#          memory: "2Mi" 
+#        default:
+#          cpu: "125m" 
+#          memory: "100Mi" 
+#        defaultRequest:
+#          cpu: "100m" 
+#          memory: "50Mi" 
+#        maxLimitRequestRatio:
+#          cpu: "2"
+#- apiVersion: v1
+#  kind: ResourceQuota
+#  metadata:
+#    name: ${NAMESPACE}-storage-consumption
+#    namespace: ${NAMESPACE}
+#  spec:
+#    hard:
+#      persistentvolumeclaims: "6" 
+#      requests.storage: "1Gi"
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: RoleBinding
   metadata:
@@ -81,10 +81,10 @@ objects:
   - apiGroup: rbac.authorization.k8s.io
     kind: User
     name: ${USER}
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: sa-postgres
+#- apiVersion: v1
+#  kind: ServiceAccount
+#  metadata:
+#    name: sa-postgres
 - apiVersion: v1
   kind: ServiceAccount
   metadata:

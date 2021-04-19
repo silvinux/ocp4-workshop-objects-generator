@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sts-example
+  labels:
+    app: workshop-sts-example
+    env: workshop
+spec:
+  selector:
+    matchLabels:
+      app: workshop-sts-example
+  serviceName: sts-example-headless
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: workshop-sts-example
+        env: workshop
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: contaner-sts-example
+        image: $EXTERNAL_REGISTRY/$POSTGRES_IMAGE
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRESQL_USER
+          value: gogs
+        - name: POSTGRESQL_DATABASE
+          value: gogs
+        - name: POSTGRESQL_PASSWORD
+          value: gogs
+        volumeMounts:
+        - name: sts-example-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: sts-example-data
+    labels:
+      app: workshop-sts-example
+      env: workshop
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      storageClassName: $POSTGRES_STORAGE_CLASS_NAME
+      resources:
+        requests:
+          storage: 250Mi
+...

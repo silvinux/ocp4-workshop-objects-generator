@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: workshop-gogs
+    env: workshop
+  name: gogs
+spec:
+  ports:
+  - name: 3000-tcp
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: workshop-gogs
+  sessionAffinity: None
+  type: ClusterIP
+...  

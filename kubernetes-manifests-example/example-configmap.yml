@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-configmap-postgres
+  labels:
+    app: workshop-pod-configmap-example
+    env: workshop 
+data:
+  POSTGRESQL_USER: gogs
+  POSTGRESQL_DATABASE: gogs
+  POSTGRESQL_PASSWORD: gogs
+...

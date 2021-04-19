@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example-pod-configmap
+  labels:
+    app: workshop-pod-configmap-example
+    env: workshop 
+spec:
+  containers:
+    - name: container-one
+      image: $EXTERNAL_REGISTRY/$POSTGRES_IMAGE
+      env:
+      - name: POSTGRESQL_USER
+        valueFrom:
+          configMapKeyRef:
+            name: example-configmap-postgres
+            key: POSTGRESQL_USER
+      - name: POSTGRESQL_DATABASE
+        valueFrom:
+          configMapKeyRef:
+            name: example-configmap-postgres
+            key: POSTGRESQL_DATABASE
+      - name: POSTGRESQL_PASSWORD
+        valueFrom:
+          configMapKeyRef:
+            name: example-configmap-postgres
+            key: POSTGRESQL_PASSWORD
+      ports:
+        - name: postgres-port 
+          containerPort: 5432
+  restartPolicy: Always
+...

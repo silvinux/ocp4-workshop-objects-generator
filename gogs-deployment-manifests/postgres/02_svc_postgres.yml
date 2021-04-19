@@ -5,7 +5,7 @@ metadata:
   name: hostname-postgres
   labels:
     app: workshop-postgres
-  #namespace: gogs-test  
+    env: workshop
 spec:
   ports:
   - port: 5432

@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    app.ini: |+
+      APP_NAME = Gogs
+      RUN_USER = gogs
+      RUN_MODE = prod
+
+      [database]
+      DB_TYPE  = postgres
+      HOST     = $POSTGRES_SERVICE_NAME:5432
+      NAME     = gogs
+      USER     = gogs
+      PASSWD   = gogs
+      SSL_MODE = disable
+      PATH     = data/gogs.db
+
+      [repository]
+      ROOT = /data/gogs-repositories
+
+      [server]
+      DOMAIN           = $APPSSUBDOMAIN
+      HTTP_PORT        = 443
+      ROOT_URL         = https://$APPSNAME.$APPSSUBDOMAIN/
+      DISABLE_SSH      = false
+      SSH_PORT         = 22
+      START_SSH_SERVER = false
+      OFFLINE_MODE     = false
+
+      [mailer]
+      ENABLED = false
+
+      [service]
+      REGISTER_EMAIL_CONFIRM = false
+      ENABLE_NOTIFY_MAIL     = false
+      DISABLE_REGISTRATION   = false
+      ENABLE_CAPTCHA         = true
+      REQUIRE_SIGNIN_VIEW    = false
+
+      [picture]
+      DISABLE_GRAVATAR        = false
+      ENABLE_FEDERATED_AVATAR = false
+
+      [session]
+      PROVIDER = file
+
+      [log]
+      MODE      = file
+      LEVEL     = Info
+      ROOT_PATH = /opt/gogs/log
+
+      [security]
+      INSTALL_LOCK = true
+      SECRET_KEY   = QLUkSMzXRYd6wqb
+
+  kind: ConfigMap
+  metadata:
+    name: gogs
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
+...  

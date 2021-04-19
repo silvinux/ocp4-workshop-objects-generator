@@ -38,6 +38,8 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: gogs-volume-1
+        - mountPath: /opt/gogs/custom/conf
+          name: config-volume
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -50,4 +52,8 @@ spec:
       - name: gogs-volume-1
         persistentVolumeClaim:
           claimName: pvc-gogs
+      - configMap:
+          defaultMode: 420
+          name: gogs
+        name: config-volume    
 ...

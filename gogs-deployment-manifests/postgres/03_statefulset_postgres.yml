@@ -5,6 +5,7 @@ metadata:
   name: pods-name-postgres
   labels:
     app: workshop-postgres
+    env: workshop
 spec:
   selector:
     matchLabels:
@@ -17,6 +18,7 @@ spec:
     metadata:
       labels:
         app: workshop-postgres
+        env: workshop
     spec:
       terminationGracePeriodSeconds: 30
       serviceAccountName: sa-postgres
@@ -60,16 +62,15 @@ spec:
           timeoutSeconds: 5
           successThreshold: 6
           failureThreshold: 1
-      volumes:
-      - name: postgres-data
-        persistentVolumeClaim:
-          claimName: pvclaim-postgres
   volumeClaimTemplates:
   - metadata:
       name: postgres-data
+    labels:
+      app: workshop-postgres
+      env: workshop
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: $STORAGE_CLASS_NAME_POSTGRES
+      storageClassName: $POSTGRES_STORAGE_CLASS_NAME
       resources:
         requests:
           storage: 250Mi

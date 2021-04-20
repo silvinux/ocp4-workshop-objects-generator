@@ -81,20 +81,21 @@ objects:
   - apiGroup: rbac.authorization.k8s.io
     kind: User
     name: ${USER}
-#- apiVersion: v1
-#  kind: ServiceAccount
-#  metadata:
-#    name: sa-postgres
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: sa-gogs
+    name: sa-postgres
+#- apiVersion: v1
+#  kind: ServiceAccount
+#  metadata:
+#    name: sa-gogs
 - apiVersion: v1
   kind: Service
   metadata:
     name: hostname-postgres
     labels:
       app: workshop-postgres
+      env: workshop
     namespace: ${NAMESPACE}
   spec:
     ports:
@@ -108,6 +109,7 @@ objects:
     name: gogs
     labels:
       app: workshop-gogs
+      env: workshop
     namespace: ${NAMESPACE}
   spec:
     ports:
@@ -125,6 +127,7 @@ objects:
     name: pods-name-postgres
     labels:
       app: workshop-postgres
+      env: workshop
     namespace: ${NAMESPACE}
   spec:
     selector:
@@ -138,6 +141,7 @@ objects:
       metadata:
         labels:
           app: workshop-postgres
+          env: workshop
       spec:
         terminationGracePeriodSeconds: 30
         serviceAccountName: sa-postgres
@@ -184,9 +188,9 @@ objects:
         volumes:
            - emptyDir: {}
              name: postgres-data
-#        - name: postgres-data
-#          persistentVolumeClaim:
-#            claimName: pvclaim-postgres
+        #   - name: postgres-data
+        #     persistentVolumeClaim:
+        #       claimName: pvclaim-postgres
 #    volumeClaimTemplates:
 #      - metadata:
 #          name: data
@@ -199,16 +203,17 @@ objects:
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
-    name: pods-name-gogs
+    name: deployment-name-gogs
     labels:
-      app: gogs
+      app: workshop-gogs
+      env: workshop
     namespace: ${NAMESPACE}
   spec:
     replicas: 0
     selector:
       matchLabels:
-        app: gogs
-        deployment: gogs
+        app: workshop-gogs
+        deployment: workshop-gogs
     strategy:
       rollingUpdate:
         maxSurge: 25%
@@ -217,8 +222,9 @@ objects:
     template:
       metadata:
         labels:
-          app: gogs
-          deployment: gogs
+          app: workshop-gogs
+          env: workshop
+          deployment: workshop-gogs
       spec:
         serviceAccountName: sa-gogs
         containers:
@@ -259,13 +265,13 @@ objects:
   kind: Route
   metadata:
     labels:
-      app: gogs
-    name: gogs
+      app: workshop-gogs
+      env: workshop
+    name: gogs-route--example
     namespace: ${NAMESPACE}
   spec:
-    host: gogs-${NAMESPACE}.apps.docp4.lab.bcnconsulting.com
     port:
-      targetPort: 3000-tcp
+      targetPort: 3001-tcp
     to:
       kind: Service
       name: gogs

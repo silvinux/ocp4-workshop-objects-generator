@@ -26,7 +26,7 @@ spec:
     spec:
       serviceAccountName: sa-gogs
       containers:
-      - image: $EXTERNAL_REGISTRY/$GOGS_IMAGE
+      - image: ${EXTERNAL_REGISTRY}/${GOGS_IMAGE}
         imagePullPolicy: IfNotPresent
         name: gogs
         ports:

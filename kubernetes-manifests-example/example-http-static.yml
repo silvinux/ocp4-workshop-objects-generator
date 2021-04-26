@@ -1,0 +1,80 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: html-static
+  labels:
+    app: html-static
+    env: workshop
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: html-static
+  template:
+    metadata:
+      labels:
+        app: html-static
+        env: workshop
+    spec:
+      containers:
+        - name: html-static
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:74ad3a0296b9313825c85e07d046b8122603cc309df0472e36e3036c4c18e3f2
+          imagePullPolicy: IfNotPresent
+          workingDir: /app/workshop
+          command: [ "python3", "-m", "http.server", "8080" ]
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: "500m"
+              memory: 512Mi
+            requests:
+              cpu: "500m"
+              memory: 512Mi
+          volumeMounts:
+            - name: workshop-content
+              mountPath: /app/workshop
+      volumes:
+        - name: workshop-content
+          configMap:
+            name: workshop-content
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: html-static
+  labels:
+    app: html-static
+    env: workshop
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+  selector:
+    app: html-static
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: html-static
+  labels:
+    app: html-static
+    env: workshop
+spec:
+  to:
+    kind: Service
+    name: html-static
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  wildcardPolicy: None
+...

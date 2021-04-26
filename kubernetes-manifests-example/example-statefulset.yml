@@ -23,7 +23,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: contaner-sts-example
-        image: $EXTERNAL_REGISTRY/$POSTGRES_IMAGE
+        image: ${EXTERNAL_REGISTRY}/${POSTGRES_IMAGE}
         ports:
         - containerPort: 5432
         env:
@@ -44,7 +44,7 @@ spec:
       env: workshop
     spec:
       accessModes: [ "ReadWriteMany" ]
-      storageClassName: $POSTGRES_STORAGE_CLASS_NAME
+      storageClassName: ${POSTGRES_STORAGE_CLASS_NAME}
       resources:
         requests:
           storage: 250Mi

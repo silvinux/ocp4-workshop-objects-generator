@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: hello
-            image: busybox
+            image: ${EXTERNAL_REGISTRY}/${BUSYBOX_CRONJOB_IMAGE}
             imagePullPolicy: IfNotPresent
             command:
             - /bin/sh

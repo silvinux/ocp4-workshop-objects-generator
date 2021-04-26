@@ -12,5 +12,5 @@ spec:
   resources:
     requests:
       storage: 250Mi 
-  storageClassName: $GOGS_STORAGE_CLASS_NAME
+  storageClassName: ${GOGS_STORAGE_CLASS_NAME}
 ...

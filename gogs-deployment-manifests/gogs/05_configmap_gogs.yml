@@ -10,7 +10,7 @@ items:
 
       [database]
       DB_TYPE  = postgres
-      HOST     = $POSTGRES_SERVICE_NAME:5432
+      HOST     = ${POSTGRES_SERVICE_NAME}:5432
       NAME     = gogs
       USER     = gogs
       PASSWD   = gogs
@@ -21,9 +21,9 @@ items:
       ROOT = /data/gogs-repositories
 
       [server]
-      DOMAIN           = $APPSSUBDOMAIN
+      DOMAIN           = ${APPSSUBDOMAIN}
       HTTP_PORT        = 443
-      ROOT_URL         = https://$APPSNAME.$APPSSUBDOMAIN/
+      ROOT_URL         = https://${APPSNAME}.${APPSSUBDOMAIN}/
       DISABLE_SSH      = false
       SSH_PORT         = 22
       START_SSH_SERVER = false
